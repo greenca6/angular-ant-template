@@ -18,7 +18,12 @@
         <nz-breadcrumb-item>Two</nz-breadcrumb-item>
       </nz-breadcrumb>
       <div style="padding:24px; background: #fff; min-height: 360px;">
-        Some Content Goes Here
+        <div [ngSwitch]="loading">
+          <nz-spin *ngSwitchCase="true" nzSimple></nz-spin>
+          <ol *ngSwitchCase="false">
+            <li *ngFor="let r of response">{{r.test}}</li>
+          </ol>
+        </div>
       </div>
     </nz-content>
     <nz-footer style="text-align: center;">Booz Allen Hamilton © 2019</nz-footer>
