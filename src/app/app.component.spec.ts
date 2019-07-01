@@ -2,17 +2,12 @@ import { TestBed, async } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
-import { Observable, of } from 'rxjs';
+import { NgZorroAntdModule, NzMessageService } from 'ng-zorro-antd';
+import { of } from 'rxjs';
 import { HelloWorldService } from './services/hello-world.service';
+import { EventService } from './services/event.service';
 
 const mockResponse = require('../../__mocks__/hello-world.json');
-
-class MockHelloWorldService {
-  getResponse(): Observable<any> {
-    return of(mockResponse);
-  }
-}
 
 describe('AppComponent', () => {
   let fixture;
@@ -29,16 +24,11 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
-    }).overrideComponent(AppComponent, {
-      set: {
-        providers: [
-          { provide: HelloWorldService, useClass: MockHelloWorldService },
-        ],
-      },
     }).compileComponents();
   }));
 
   beforeEach(() => {
+    spyOn(TestBed.get(HelloWorldService), 'getResponse').and.returnValue(of(mockResponse));
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
     fixture.detectChanges();
@@ -46,6 +36,13 @@ describe('AppComponent', () => {
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
-    console.log(app.response);
+  });
+
+  it('should display a message if the API returns an error', () => {
+    const messageSpy = spyOn(TestBed.get(NzMessageService), 'create');
+    const events = TestBed.get(EventService);
+    events.publish(EventService.API_REQ_FAILURE, { status: 500, statusText: 'Server Error' });
+    fixture.detectChanges();
+    expect(messageSpy).toHaveBeenCalled();
   });
 });
