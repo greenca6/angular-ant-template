@@ -6,19 +6,15 @@ require('dotenv').config();
  *
  */
 const PROXY_CONFIG = {
-    "/api": {
-        target: "https://my.api.mockaroo.com",
-        logLevel: "info",
-        secure: false,
-        changeOrigin: true,
-        bypass: function (req) {
-            if (req.headers.accept.indexOf("html") !== -1) {
-                console.log("Skipping proxy for browser request.");
-                return "/index.html";
-            }
-            req.headers["X-API-Key"] = process.env.API_KEY;
-        }
-    }
+  "/api": {
+      target: process.env.API_URL,
+      logLevel: "info",
+      secure: false,
+      changeOrigin: true,
+      onProxyReq: function(req) {
+        req.setHeader('X-API-KEY', process.env.API_KEY);
+      },
   }
+};
 
-  module.exports = PROXY_CONFIG;
+module.exports = PROXY_CONFIG;

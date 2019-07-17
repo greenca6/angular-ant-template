@@ -1,33 +1,17 @@
-FROM node:latest AS builder
-ENV APP=/var/www
+FROM node:10.16.0-alpine AS builder
 
-#RUN apt-get update # && app-get install -y curl
-
-# Create app directory
-RUN mkdir -p $APP
-WORKDIR $APP
+WORKDIR /app
 
 # Install app dependencies
-COPY package*.json $APP/
-
+COPY package.json .
+COPY package-lock.json .
 RUN npm install
-#RUN npm rebuild node-sass
 
-# Bundle app source in this experiment the dist should be build
-# already  as well as all node modules
-COPY . $APP
-RUN npm run build
+COPY . .
 
-FROM nginx:latest
-RUN apt-get update && apt-get install -y nginx
+# Run the SSR build
+RUN npm run build:ssr
 
-ENV APP1=/var/www
-WORKDIR /usr/share/nginx/html
+EXPOSE 4000
 
-
-# now there is a folder in dist for angular 6
-COPY --from=builder ${APP1}/dist/nasdaq-clique-analysis .
-COPY proxy.conf /tmp/proxy.conf
-
-EXPOSE 8080 8443
-CMD ["sh","-c","envsubst < /tmp/proxy.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD npm run serve:ssr

@@ -1,0 +1,6 @@
+<div [ngSwitch]="loading">
+  <nz-spin *ngSwitchCase="true" nzSimple></nz-spin>
+  <ol *ngSwitchCase="false">
+    <li *ngFor="let r of response">{{r.test}}</li>
+  </ol>
+</div>

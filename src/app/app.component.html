@@ -2,15 +2,17 @@
   <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate">
     <div class="logo"></div>
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-      <li nz-menu-item>
-        <span><i nz-icon type="line-chart"></i><span class="nav-text">Link One</span></span>
+      <li *ngFor="let route of appRoutes" nz-menu-item [nzSelected]="currentRoute === route.path">
+        <a [routerLink]="route.path">
+          <i nz-icon [type]="route.sidebarIcon"></i>
+          <span class="nav-text">{{route.sidebarLabel}}</span>
+        </a>
       </li>
     </ul>
   </nz-sider>
   <nz-layout>
     <nz-header style="background: #fff; padding:0;">
-      <i class="trigger" nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-        (click)="isCollapsed = !isCollapsed"></i>
+      <i class="trigger" nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></i>
     </nz-header>
     <nz-content style="margin:0 16px;">
       <nz-breadcrumb style="margin:16px 0;">
@@ -18,12 +20,7 @@
         <nz-breadcrumb-item>Two</nz-breadcrumb-item>
       </nz-breadcrumb>
       <div style="padding:24px; background: #fff; min-height: 360px;">
-        <div [ngSwitch]="loading">
-          <nz-spin *ngSwitchCase="true" nzSimple></nz-spin>
-          <ol *ngSwitchCase="false">
-            <li *ngFor="let r of response">{{r.test}}</li>
-          </ol>
-        </div>
+        <router-outlet></router-outlet>
       </div>
     </nz-content>
     <nz-footer style="text-align: center;">Booz Allen Hamilton © 2019</nz-footer>
